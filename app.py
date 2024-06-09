@@ -1,5 +1,4 @@
 from database.setup import create_tables
-from database.connection import get_db_connection
 from models.article import Article
 from models.author import Author
 from models.magazine import Magazine
@@ -12,67 +11,33 @@ def main():
     author_name = input("Enter author's name: ")
     magazine_name = input("Enter magazine name: ")
     magazine_category = input("Enter magazine category: ")
-    article_title = input("Enter article title: ")
-    article_content = input("Enter article content: ")
 
-    # Connect to the database
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Count the initial number of records in each table
-    cursor.execute('SELECT COUNT(*) FROM magazines')
-    initial_magazine_count = cursor.fetchone()[0]
-
-    cursor.execute('SELECT COUNT(*) FROM authors')
-    initial_author_count = cursor.fetchone()[0]
-
-    cursor.execute('SELECT COUNT(*) FROM articles')
-    initial_article_count = cursor.fetchone()[0]
-
-    '''
-        The following is just for testing purposes, 
-        you can modify it to meet the requirements of your implementation.
-    '''
+    # Validate and collect article title input
+    while True:
+        article_title = input("Enter article title (5-50 characters): ")
+        if 5 <= len(article_title) <= 50:
+            break
+        else:
+            print("Invalid title. Please enter a title between 5 and 50 characters.")
 
     # Create an author
-    cursor.execute('INSERT INTO authors (name) VALUES (?)', (author_name,))
-    author_id = cursor.lastrowid  # Use this to fetch the id of the newly created author
+    author = Author(author_name)
 
     # Create a magazine
-    cursor.execute('INSERT INTO magazines (name, category) VALUES (?,?)', (magazine_name, magazine_category))
-    magazine_id = cursor.lastrowid  # Use this to fetch the id of the newly created magazine
+    magazine = Magazine(magazine_name, magazine_category)
 
     # Create an article
-    cursor.execute('INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
-                   (article_title, article_content, author_id, magazine_id))
-
-    conn.commit()
-
-    # Query the database for newly inserted records
-    cursor.execute('SELECT * FROM magazines WHERE id > ?', (initial_magazine_count,))
-    new_magazines = cursor.fetchall()
-
-    cursor.execute('SELECT * FROM authors WHERE id > ?', (initial_author_count,))
-    new_authors = cursor.fetchall()
-
-    cursor.execute('SELECT * FROM articles WHERE id > ?', (initial_article_count,))
-    new_articles = cursor.fetchall()
-
-    conn.close()
+    article = Article(author, magazine, article_title)
 
     # Display only the newly inputted records
     print("\nMagazines:")
-    for magazine in new_magazines:
-        print(Magazine(magazine["id"], magazine["name"], magazine["category"]))
+    print(magazine)
 
     print("\nAuthors:")
-    for author in new_authors:
-        print(Author(author["id"], author["name"]))
+    print(author)
 
     print("\nArticles:")
-    for article in new_articles:
-        print(Article(article["id"], article["title"], article["content"], article["author_id"], article["magazine_id"]))
-
+    print(article)
 
 if __name__ == "__main__":
     main()
