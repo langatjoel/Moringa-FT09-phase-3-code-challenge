@@ -19,19 +19,28 @@ def main():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Count the initial number of records in each table
+    cursor.execute('SELECT COUNT(*) FROM magazines')
+    initial_magazine_count = cursor.fetchone()[0]
+
+    cursor.execute('SELECT COUNT(*) FROM authors')
+    initial_author_count = cursor.fetchone()[0]
+
+    cursor.execute('SELECT COUNT(*) FROM articles')
+    initial_article_count = cursor.fetchone()[0]
 
     '''
         The following is just for testing purposes, 
-        you can modify it to meet the requirements of your implmentation.
+        you can modify it to meet the requirements of your implementation.
     '''
 
     # Create an author
     cursor.execute('INSERT INTO authors (name) VALUES (?)', (author_name,))
-    author_id = cursor.lastrowid # Use this to fetch the id of the newly created author
+    author_id = cursor.lastrowid  # Use this to fetch the id of the newly created author
 
     # Create a magazine
     cursor.execute('INSERT INTO magazines (name, category) VALUES (?,?)', (magazine_name, magazine_category))
-    magazine_id = cursor.lastrowid # Use this to fetch the id of the newly created magazine
+    magazine_id = cursor.lastrowid  # Use this to fetch the id of the newly created magazine
 
     # Create an article
     cursor.execute('INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
@@ -39,32 +48,31 @@ def main():
 
     conn.commit()
 
-    # Query the database for inserted records. 
-    # The following fetch functionality should probably be in their respective models
+    # Query the database for newly inserted records
+    cursor.execute('SELECT * FROM magazines WHERE id > ?', (initial_magazine_count,))
+    new_magazines = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM magazines')
-    magazines = cursor.fetchall()
+    cursor.execute('SELECT * FROM authors WHERE id > ?', (initial_author_count,))
+    new_authors = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM authors')
-    authors = cursor.fetchall()
-
-    cursor.execute('SELECT * FROM articles')
-    articles = cursor.fetchall()
+    cursor.execute('SELECT * FROM articles WHERE id > ?', (initial_article_count,))
+    new_articles = cursor.fetchall()
 
     conn.close()
 
-    # Display results
+    # Display only the newly inputted records
     print("\nMagazines:")
-    for magazine in magazines:
+    for magazine in new_magazines:
         print(Magazine(magazine["id"], magazine["name"], magazine["category"]))
 
     print("\nAuthors:")
-    for author in authors:
+    for author in new_authors:
         print(Author(author["id"], author["name"]))
 
     print("\nArticles:")
-    for article in articles:
+    for article in new_articles:
         print(Article(article["id"], article["title"], article["content"], article["author_id"], article["magazine_id"]))
+
 
 if __name__ == "__main__":
     main()
