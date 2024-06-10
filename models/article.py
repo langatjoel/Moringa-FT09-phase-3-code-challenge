@@ -27,4 +27,4 @@ class Article:
         return self._title
 
     def __repr__(self):
-        return f"<Article {self._title}>"
+        return f"ARTICLE: {self._title}"

@@ -29,4 +29,4 @@ class Magazine:
         return self._category
 
     def __repr__(self):
-        return f"<Magazine {self._name} ({self._category})>"
+        return f"MAGAZINE: {self._name} || MAGAZINE ID: {self._id} || CATEGORY: {self._category}"

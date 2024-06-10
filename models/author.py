@@ -22,4 +22,4 @@ class Author:
         return self._name
 
     def __repr__(self):
-        return f"<Author {self._name}>"
+        return f"AUTHOR: {self._name} || ID: {self._id} "
