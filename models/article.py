@@ -26,5 +26,13 @@ class Article:
     def title(self):
         return self._title
 
+    @property
+    def author(self):
+        return self._author
+
+    @property
+    def magazine(self):
+        return self._magazine
+
     def __repr__(self):
         return f"ARTICLE: {self._title}"
